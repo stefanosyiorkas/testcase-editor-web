@@ -2,9 +2,7 @@
 import React, { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Copy } from "lucide-react";
+import { Plus, Minus } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import TestCaseForm from './TestCaseForm';
 import TestParamsForm from './TestParamsForm';
@@ -97,25 +95,32 @@ const TestCommandBuilder = () => {
     });
   };
 
+  const addParameter = () => {
+    const newParamKey = `new_param_${Object.keys(command.params).length}`;
+    setCommand(prev => ({
+      ...prev,
+      params: {
+        ...prev.params,
+        [newParamKey]: ""
+      }
+    }));
+  };
+
+  const removeParameter = (paramKey: string) => {
+    const newParams = { ...command.params };
+    delete newParams[paramKey];
+    setCommand(prev => ({
+      ...prev,
+      params: newParams
+    }));
+  };
+
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6">
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card className="p-6">
-          <h2 className="text-2xl font-bold mb-4 text-primary">Test Cases</h2>
-          <TestCaseForm testCase={command.testcases[0]} onChange={handleTestCaseChange} />
-        </Card>
-        
-        <Card className="p-6">
-          <h2 className="text-2xl font-bold mb-4 text-primary">Parameters</h2>
-          <TestParamsForm params={command.params} onChange={handleParamsChange} />
-        </Card>
-      </div>
-
       <Card className="p-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold text-primary">Generated Command</h2>
           <Button onClick={copyCommand} variant="outline" className="flex items-center gap-2">
-            <Copy className="h-4 w-4" />
             Copy
           </Button>
         </div>
@@ -123,6 +128,28 @@ const TestCommandBuilder = () => {
           {generateCommand()}
         </pre>
       </Card>
+
+      <div className="grid gap-6 md:grid-cols-2">
+        <Card className="p-6">
+          <h2 className="text-2xl font-bold mb-4 text-primary">Test Cases</h2>
+          <TestCaseForm testCase={command.testcases[0]} onChange={handleTestCaseChange} />
+        </Card>
+        
+        <Card className="p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-bold text-primary">Parameters</h2>
+            <Button onClick={addParameter} variant="outline" size="sm">
+              <Plus className="h-4 w-4" />
+              Add Parameter
+            </Button>
+          </div>
+          <TestParamsForm 
+            params={command.params} 
+            onChange={handleParamsChange}
+            onRemove={removeParameter}
+          />
+        </Card>
+      </div>
     </div>
   );
 };
