@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -69,11 +68,39 @@ const TestCommandBuilder = () => {
     }
   });
 
-  const handleTestCaseChange = (testCase: TestCase) => {
+  const handleTestCaseChange = (index: number, testCase: TestCase) => {
     setCommand(prev => ({
       ...prev,
-      testcases: [testCase]
+      testcases: prev.testcases.map((tc, i) => i === index ? testCase : tc)
     }));
+  };
+
+  const addTestCase = () => {
+    const newTestCaseId = `testcase_${command.testcases.length + 1}`;
+    const newTestCase = {
+      [newTestCaseId]: {
+        predecessor_test: "",
+        wallet_id: "",
+        provider: "",
+        balance: "0",
+        skip_test: "False",
+        testcase_tag: "",
+        status: true
+      }
+    };
+    setCommand(prev => ({
+      ...prev,
+      testcases: [...prev.testcases, newTestCase]
+    }));
+  };
+
+  const removeTestCase = (index: number) => {
+    if (command.testcases.length > 1) {
+      setCommand(prev => ({
+        ...prev,
+        testcases: prev.testcases.filter((_, i) => i !== index)
+      }));
+    }
   };
 
   const handleParamsChange = (params: TestCommand['params']) => {
@@ -131,8 +158,34 @@ const TestCommandBuilder = () => {
 
       <div className="grid gap-6 md:grid-cols-2">
         <Card className="p-6">
-          <h2 className="text-2xl font-bold mb-4 text-primary">Test Cases</h2>
-          <TestCaseForm testCase={command.testcases[0]} onChange={handleTestCaseChange} />
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-bold text-primary">Test Cases</h2>
+            <Button onClick={addTestCase} variant="outline" size="sm">
+              <Plus className="h-4 w-4" />
+              Add Test Case
+            </Button>
+          </div>
+          <div className="space-y-8">
+            {command.testcases.map((testCase, index) => (
+              <div key={index} className="relative">
+                {command.testcases.length > 1 && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => removeTestCase(index)}
+                    className="absolute right-0 top-0 h-8 w-8 p-0"
+                  >
+                    <Minus className="h-4 w-4" />
+                    <span className="sr-only">Remove test case</span>
+                  </Button>
+                )}
+                <TestCaseForm
+                  testCase={testCase}
+                  onChange={(updatedTestCase) => handleTestCaseChange(index, updatedTestCase)}
+                />
+              </div>
+            ))}
+          </div>
         </Card>
         
         <Card className="p-6">
