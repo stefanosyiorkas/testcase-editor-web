@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.5'
 
 services:
   app:
@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8080:8080" # Map container port 8080 to host port 8080
+      - "4173:4173" # Map container port 4173 to host port 4173
     volumes:
       - .:/app
     environment:
