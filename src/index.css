@@ -98,4 +98,9 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  .text-primary {
+    --tw-text-opacity: 1;
+    color: rgb(205 5 17 / var(--tw-text-opacity, 1)) !important; /* Updated to #CD0511 */
+  }
 }

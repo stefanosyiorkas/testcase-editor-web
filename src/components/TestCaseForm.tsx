@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -18,9 +17,9 @@ interface TestCaseFormProps {
 
 const TestCaseForm = ({ testCase, onChange }: TestCaseFormProps) => {
   const [editingKey, setEditingKey] = useState<string | null>(null);
-  const [newKey, setNewKey] = useState('');
+  const [newKey, setNewKey] = useState("");
   const [editingParam, setEditingParam] = useState<string | null>(null);
-  const [newParamKey, setNewParamKey] = useState('');
+  const [newParamKey, setNewParamKey] = useState("");
 
   const testCaseId = Object.keys(testCase)[0];
   const testCaseData = testCase[testCaseId];
@@ -29,8 +28,8 @@ const TestCaseForm = ({ testCase, onChange }: TestCaseFormProps) => {
     onChange({
       [testCaseId]: {
         ...testCaseData,
-        [field]: value
-      }
+        [field]: value,
+      },
     });
   };
 
@@ -42,7 +41,7 @@ const TestCaseForm = ({ testCase, onChange }: TestCaseFormProps) => {
   const handleRename = () => {
     if (newKey && newKey !== testCaseId) {
       onChange({
-        [newKey]: testCaseData
+        [newKey]: testCaseData,
       });
     }
     setEditingKey(null);
@@ -59,9 +58,9 @@ const TestCaseForm = ({ testCase, onChange }: TestCaseFormProps) => {
       const value = updatedData[oldKey];
       delete updatedData[oldKey];
       updatedData[newParamKey] = value;
-      
+
       onChange({
-        [testCaseId]: updatedData
+        [testCaseId]: updatedData,
       });
     }
     setEditingParam(null);
@@ -71,8 +70,8 @@ const TestCaseForm = ({ testCase, onChange }: TestCaseFormProps) => {
     onChange({
       [testCaseId]: {
         ...testCaseData,
-        [`new_param_${Object.keys(testCaseData).length}`]: ''
-      }
+        [`new_param_${Object.keys(testCaseData).length}`]: "",
+      },
     });
   };
 
@@ -80,7 +79,7 @@ const TestCaseForm = ({ testCase, onChange }: TestCaseFormProps) => {
     const updatedData = { ...testCaseData };
     delete updatedData[param];
     onChange({
-      [testCaseId]: updatedData
+      [testCaseId]: updatedData,
     });
   };
 
@@ -93,21 +92,21 @@ const TestCaseForm = ({ testCase, onChange }: TestCaseFormProps) => {
               value={newKey}
               onChange={(e) => setNewKey(e.target.value)}
               onBlur={handleRename}
-              onKeyDown={(e) => e.key === 'Enter' && handleRename()}
+              onKeyDown={(e) => e.key === "Enter" && handleRename()}
               autoFocus
               className="font-medium"
             />
           </div>
         ) : (
           <Label className="flex-1 font-medium">
-            {testCaseId.replace(/_/g, ' ')}
+            {testCaseId.replace(/_/g, " ")}
           </Label>
         )}
         <Button
           variant="ghost"
           size="sm"
           onClick={startEditing}
-          className="h-8 w-8 p-0"
+          className="h-8 w-8 p-0 mr-10"
         >
           <Edit className="h-4 w-4" />
           <span className="sr-only">Edit test case ID</span>
@@ -124,14 +123,16 @@ const TestCaseForm = ({ testCase, onChange }: TestCaseFormProps) => {
                     value={newParamKey}
                     onChange={(e) => setNewParamKey(e.target.value)}
                     onBlur={() => handleRenameParam(field)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleRenameParam(field)}
+                    onKeyDown={(e) =>
+                      e.key === "Enter" && handleRenameParam(field)
+                    }
                     autoFocus
                     className="font-medium"
                   />
                 </div>
               ) : (
                 <Label className="flex-1 capitalize font-medium">
-                  {field.replace(/_/g, ' ')}
+                  {field.replace(/_/g, " ")}
                 </Label>
               )}
               <Button
@@ -153,11 +154,13 @@ const TestCaseForm = ({ testCase, onChange }: TestCaseFormProps) => {
                 <span className="sr-only">Remove parameter</span>
               </Button>
             </div>
-            {typeof value === 'boolean' ? (
+            {typeof value === "boolean" ? (
               <select
                 className="w-full p-2 border rounded-md"
                 value={value.toString()}
-                onChange={(e) => handleInputChange(field, e.target.value === 'true')}
+                onChange={(e) =>
+                  handleInputChange(field, e.target.value === "true")
+                }
               >
                 <option value="true">True</option>
                 <option value="false">False</option>
@@ -172,11 +175,7 @@ const TestCaseForm = ({ testCase, onChange }: TestCaseFormProps) => {
         ))}
       </div>
 
-      <Button
-        variant="outline"
-        onClick={addParameter}
-        className="w-full mt-4"
-      >
+      <Button variant="outline" onClick={addParameter} className="w-full mt-4">
         <Plus className="h-4 w-4 mr-2" />
         Add Parameter
       </Button>
