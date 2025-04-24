@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -21,51 +22,15 @@ interface TestCase {
 interface TestCommand {
   testcases: TestCase[];
   params: {
-    environment: string;
-    newly_created: string;
-    composite_key: string;
-    wallet_approval: string;
-    report_str: string;
-    approval: string;
-    browser: string;
-    regulator: string;
-    selenium_grid: string;
-    output_file: string;
-    phone_verification: string;
-    composite_test: string;
-    amount: string;
+    [key: string]: string;
   };
 }
 
 const TestCommandBuilder = () => {
   const { toast } = useToast();
   const [command, setCommand] = useState<TestCommand>({
-    testcases: [{
-      "0004_my_hfcopy_multiple_follower_creation": {
-        predecessor_test: "0001_hotforex_first_step_registration",
-        wallet_id: "50183990",
-        provider: "35455365",
-        balance: "10000",
-        skip_test: "False",
-        testcase_tag: "hfsv_multiple_follower_creation",
-        status: true
-      }
-    }],
-    params: {
-      environment: "dev4",
-      newly_created: "True",
-      composite_key: "HFSV",
-      wallet_approval: "true",
-      report_str: "hfsv_multiple_follower_creation",
-      approval: "true",
-      browser: "chrome",
-      regulator: "hfsv",
-      selenium_grid: "true",
-      output_file: "copy_mass_follow.yaml",
-      phone_verification: "true",
-      composite_test: "True",
-      amount: "100"
-    }
+    testcases: [],
+    params: {}
   });
 
   const handleTestCaseChange = (index: number, testCase: TestCase) => {
@@ -76,7 +41,7 @@ const TestCommandBuilder = () => {
   };
 
   const addTestCase = () => {
-    const newTestCaseId = `testcase_${command.testcases.length + 1}`;
+    const newTestCaseId = `new_testcase_${command.testcases.length + 1}`;
     const newTestCase = {
       [newTestCaseId]: {
         predecessor_test: "",
@@ -95,12 +60,10 @@ const TestCommandBuilder = () => {
   };
 
   const removeTestCase = (index: number) => {
-    if (command.testcases.length > 1) {
-      setCommand(prev => ({
-        ...prev,
-        testcases: prev.testcases.filter((_, i) => i !== index)
-      }));
-    }
+    setCommand(prev => ({
+      ...prev,
+      testcases: prev.testcases.filter((_, i) => i !== index)
+    }));
   };
 
   const handleParamsChange = (params: TestCommand['params']) => {
@@ -123,7 +86,7 @@ const TestCommandBuilder = () => {
   };
 
   const addParameter = () => {
-    const newParamKey = `new_param_${Object.keys(command.params).length}`;
+    const newParamKey = `new_param_${Object.keys(command.params).length + 1}`;
     setCommand(prev => ({
       ...prev,
       params: {
@@ -168,7 +131,7 @@ const TestCommandBuilder = () => {
           <div className="space-y-8">
             {command.testcases.map((testCase, index) => (
               <div key={index} className="relative">
-                {command.testcases.length > 1 && (
+                {command.testcases.length > 0 && (
                   <Button
                     variant="ghost"
                     size="sm"
