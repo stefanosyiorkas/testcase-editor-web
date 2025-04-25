@@ -1,20 +1,14 @@
 import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Minus } from "lucide-react";
+import { Plus, Minus, ClipboardPaste } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import TestCaseForm from "./TestCaseForm";
 import TestParamsForm from "./TestParamsForm";
 
 interface TestCase {
   [key: string]: {
-    predecessor_test: string;
-    wallet_id: string;
-    provider: string;
-    balance: string;
-    skip_test: string;
-    testcase_tag: string;
-    status: boolean;
+    [key: string]: string | boolean;
   };
 }
 
@@ -68,22 +62,52 @@ const TestCommandBuilder = () => {
     return `python -u /home/tornado/selenium-tests/testcase_runner.py '${JSON.stringify(
       command,
       null,
-      2 // Indentation for better readability
+      2
     )}'`;
   };
 
   const copyCommand = () => {
     const command = generateCommand();
-    const prefix =
-      "python -u /home/tornado/selenium-tests/testcase_runner.py '";
+    const prefix = "python -u /home/tornado/selenium-tests/testcase_runner.py '";
     const [before, after] = command.split(prefix);
-    const cleanedAfter = after.replace(/[\s\t]+/g, ""); // Remove spaces and tabs
+    const cleanedAfter = after.replace(/[\s\t]+/g, "");
     const finalCommand = `${before}${prefix}${cleanedAfter}`;
     navigator.clipboard.writeText(finalCommand.trim());
     toast({
       title: "Command copied!",
       description: "The command has been copied to your clipboard.",
     });
+  };
+
+  const pasteCommand = async () => {
+    try {
+      const clipboardText = await navigator.clipboard.readText();
+      const match = clipboardText.match(/testcase_runner\.py '(.+)'/);
+      
+      if (!match) {
+        toast({
+          title: "Invalid command format",
+          description: "Please paste a valid test command.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const jsonStr = match[1];
+      const parsedCommand: TestCommand = JSON.parse(jsonStr);
+      
+      setCommand(parsedCommand);
+      toast({
+        title: "Command loaded!",
+        description: "The command has been successfully parsed and loaded.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error parsing command",
+        description: "Unable to parse the command. Please ensure it's in the correct format.",
+        variant: "destructive",
+      });
+    }
   };
 
   const addParameter = () => {
@@ -111,13 +135,23 @@ const TestCommandBuilder = () => {
       <Card className="p-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold text-primary">Generated Command</h2>
-          <Button
-            onClick={copyCommand}
-            variant="outline"
-            className="flex items-center gap-2"
-          >
-            Copy
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              onClick={pasteCommand}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <ClipboardPaste className="h-4 w-4" />
+              Paste
+            </Button>
+            <Button
+              onClick={copyCommand}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              Copy
+            </Button>
+          </div>
         </div>
         <pre className="bg-gray-50 p-4 rounded-lg overflow-x-auto text-sm whitespace-pre-wrap">
           {generateCommand()}
